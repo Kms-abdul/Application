@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app
 from extensions import db
+from extensions import limiter
 from models import User, Branch, UserBranchAccess
 from datetime import date, datetime, timedelta
 import jwt
@@ -112,6 +113,7 @@ def create_user(current_user):
             
         username = data.get("username")
         password = data.get("password")
+        useremail = data.get("useremail")
         role = data.get("role", "User")
         location = data.get("location", "")
         # Frontend sends "branches" array and legacy "branch" string
@@ -141,6 +143,7 @@ def create_user(current_user):
         new_user = User(
             username=username,
             password=password,
+            useremail=useremail,
             role=role,
             location=location,
             branch=final_branch_name, # Save Name instead of Code

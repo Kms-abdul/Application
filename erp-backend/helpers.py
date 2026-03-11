@@ -6,6 +6,9 @@ from extensions import db
 from datetime import datetime, date
 import os
 from models import Branch, OrgMaster, Student, FeeInstallment, StudentFee, User, FeeType
+import logging
+
+logger = logging.getLogger(__name__)
 
 MONTHS = [
     "May", "June", "July", "August", "September", "October",
@@ -239,14 +242,16 @@ def assign_fee_to_student(student_id, fee_structure, is_student_new=False):
                       print(f"DEBUG: Skipping Fee {fee_structure.id} (Loc: {fee_structure.location}) for Student {student.branch} (Loc: {s_loc_name})")
                       return
 
-        with open("debug_log.txt", "a") as log:
-            log.write(f"DEBUG: assign_fee_to_student called for Student {student_id}, FeeStruct {fee_structure.id}\\n")
+        logger.debug(
+            f"assign_fee_to_student called for Student {student_id}, FeeStruct {fee_structure.id}"
+        )
+
         # LOGIC:
         # If fee structure is marked 'isnewadmission=True', it applies ONLY to New Students.
         # If current student is NOT new (is_student_new=False), skip this fee.
+
         if fee_structure.isnewadmission and not is_student_new:
-            with open("debug_log.txt", "a") as log:
-                log.write(f"DEBUG: Skipping - Fee is for new admission, student is not new.\\n")
+            logger.debug("Skipping - Fee is for new admission, student is not new.")
             return
 
         # Check if fee is already assigned to prevent duplicates

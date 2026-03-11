@@ -3,7 +3,6 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from flask_migrate import Migrate 
 import os
-
 # -----------------------------
 # EXTENSIONS
 # -----------------------------
@@ -31,34 +30,24 @@ from routes.report_card_routes import report_bp as report_card_bp
 from routes.test_attendance_routes import test_attendance_bp
 from routes.config_routes import bp as config_bp
 from routes.document_routes import document_routes
-
-
-  
-
-
 # -----------------------------
 # LOAD ENV
 # -----------------------------
 # Load .env from the same directory as app.py
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
-
-
 def create_app():
     app = Flask(__name__, static_folder="../frontend/dist", static_url_path="/")
-
     # -----------------------------
     # CONFIG
     # -----------------------------
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
     app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
-
     DB_USER = os.getenv("DB_USER")
     DB_PASSWORD = os.getenv("DB_PASSWORD")
     DB_HOST = os.getenv("DB_HOST")
     DB_PORT = os.getenv("DB_PORT")
     DB_NAME = os.getenv("DB_NAME")
-
     if DB_HOST:
         app.config["SQLALCHEMY_DATABASE_URI"] = (
             f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
@@ -66,7 +55,6 @@ def create_app():
     else:
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///erp.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
     # -----------------------------
     # INIT EXTENSIONS
     # -----------------------------
@@ -86,8 +74,6 @@ def create_app():
     })
     db.init_app(app)
     migrate.init_app(app, db)
-
-
     # -----------------------------
     # REGISTER BLUEPRINTS
     # -----------------------------
@@ -110,32 +96,27 @@ def create_app():
     app.register_blueprint(test_attendance_bp)
     app.register_blueprint(config_bp)
     app.register_blueprint(document_routes, url_prefix="/api/documents")
-
     # -----------------------------
     # SERVE UPLOADS (legacy - kept for backward compatibility)
     # -----------------------------
     @app.route('/uploads/<path:filename>')
     def serve_uploads(filename):
         return send_from_directory(os.path.join(app.root_path, 'uploads'), filename)
-
     # -----------------------------
     # SERVE MEDIA (student photos + documents)
     # Stored at: HifzErpSoftwareApplication/Media/
     # URL:        /Media/student_document/<admission_no>/profile.jpg
     # -----------------------------
     media_folder = os.path.abspath(os.path.join(app.root_path, '..', 'Media'))
-
     @app.route('/Media/<path:filename>')
     def serve_media(filename):
         return send_from_directory(media_folder, filename)
-
     # -----------------------------
     # FAVICON FIX
     # -----------------------------
     @app.route('/favicon.ico')
     def favicon():
         return '', 204
-
     # -----------------------------
     # SERVE FRONTEND (PRODUCTION)
     # -----------------------------
@@ -144,22 +125,16 @@ def create_app():
     def serve(path):
         if path.startswith("api/"):
             return jsonify({"error": "Not Found"}), 404
-
         file_path = os.path.join(app.static_folder, path)
         if path and os.path.exists(file_path):
             return send_from_directory(app.static_folder, path)
         return send_from_directory(app.static_folder, "index.html")
-
     @app.errorhandler(413)
     def request_entity_too_large(error):
         return jsonify({'message': 'File too large. Maximum size is 16 MB.'}), 413
-
     return app
-
-
 if __name__ == "__main__":
     app = create_app()
-
     # 🔴 RUN ONCE IF TABLES NOT CREATED (DEV ONLY)
     from extensions import db
     from flask_migrate import upgrade
@@ -167,7 +142,6 @@ if __name__ == "__main__":
     with app.app_context():
         upgrade()
         print("✅ Database upgraded.")
-
     port = int(os.getenv("PORT", 5000))
     debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
     app.run(host="0.0.0.0", port=port, debug=debug)

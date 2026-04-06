@@ -160,7 +160,7 @@ def get_students(current_user):
                 StudentAcademicRecord, 
                 and_(Student.student_id == StudentAcademicRecord.student_id, StudentAcademicRecord.academic_year == h_year)
             )
-            # Filter: Show IF (currently in this year) OR (was promoted to this year and still marked active)
+            # Filter: Show IF (currently active in this year) OR (has a VALID historical record for this year)
             q = q.filter(or_(
                 and_(StudentAcademicRecord.id != None, StudentAcademicRecord.is_promoted == True),
                 Student.academic_year == h_year
@@ -1030,6 +1030,19 @@ def promote_students_bulk(current_user):
                     academic_year=student.academic_year
                 ).first()
 
+                # HISTORY PERSISTENCE: If they are leaving a year that has no record, create it now
+                if not current_record:
+                    current_record = StudentAcademicRecord(
+                        student_id=student_id,
+                        academic_year=student.academic_year,
+                        class_name=student.clazz,
+                        section=student.section,
+                        roll_number=student.Roll_Number,
+                        is_promoted=True  # Mark it as a valid history record
+                    )
+                    db.session.add(current_record)
+                    db.session.commit() # Commit to ensure it exists before proceeding
+
                 new_roll_no = roll_numbers.get(str(student_id), student.Roll_Number)
                 final_section = new_section or student.section
 
@@ -1188,8 +1201,8 @@ def demote_students_bulk(current_user):
                 source_record.is_promoted = False
                 source_record.promoted_date = None
 
-                # 5. Reactivate restore year record (student is back here)
-                restore_record.is_promoted = False
+                # 5. Reactivate restore year record (marked as valid history)
+                restore_record.is_promoted = True
 
                 # 6. Point the Student back to restore year
                 student.academic_year = restore_year
@@ -1239,8 +1252,11 @@ def get_student_summary(current_user):
                 StudentAcademicRecord, 
                 and_(Student.student_id == StudentAcademicRecord.student_id, StudentAcademicRecord.academic_year == h_year)
             )
-            # Filter: Has record OR is currently in year
-            base_q = base_q.filter(or_(StudentAcademicRecord.id != None, Student.academic_year == h_year))
+            # Filter: Show IF (currently active in this year) OR (has a VALID historical record for this year)
+            base_q = base_q.filter(or_(
+                and_(StudentAcademicRecord.id != None, StudentAcademicRecord.is_promoted == True),
+                Student.academic_year == h_year
+            ))
         else:
             # Current State
             base_q = db.session.query(Student, None)

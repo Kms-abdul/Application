@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 from models import Student, ClassTest, StudentTestAssignment, StudentAcademicRecord, ClassMaster, TestType
-from helpers import token_required
+from helpers import token_required, ensure_student_editable
 
 student_test_bp = Blueprint('student_test', __name__)  
 
@@ -118,6 +118,12 @@ def save_assignments(current_user):
         
         if not update_list:
              return jsonify({'message': 'No changes to save'}), 200
+             
+        for update in update_list:
+            try:
+                ensure_student_editable(update['student_id'], academic_year)
+            except Exception as e:
+                return jsonify({"error": str(e)}), 403
 
         for update in update_list:
             student_id = update.get('student_id')

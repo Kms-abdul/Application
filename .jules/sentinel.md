@@ -1,0 +1,4 @@
+## 2025-04-25 - Fix Hardcoded SECRET_KEY Fallback
+**Vulnerability:** A hardcoded `SECRET_KEY` ("dev-only-secret-key-change-before-production") was used as a fallback in non-production environments when the environment variable was missing.
+**Learning:** Hardcoded secrets in code (even if labeled "dev-only") are risky because they might inadvertently end up being used in unintended environments or committed to source control where attackers can find them. Relying on hardcoded values can lead to session hijacking and signature forgery.
+**Prevention:** Use a secure, dynamic fallback mechanism such as generating a random 64-character hex string using `os.urandom(32).hex()` when a static secret is not provided or required. Ensure production explicitly demands a configured `SECRET_KEY` without fallbacks.

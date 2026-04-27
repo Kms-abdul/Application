@@ -192,7 +192,7 @@ const ChangeSection: React.FC<ChangeSectionProps> = ({ onBack }) => {
                         <table className="min-w-full text-sm border-collapse">
                             <thead className="sticky top-0 bg-gray-50 z-10 shadow-sm">
                                 <tr className="text-left text-gray-600 font-bold border-b">
-                                    <th className="p-3 w-12"><input type="checkbox" onChange={handleSelectAll} checked={sourceStudents.length > 0 && selectedStudentIds.length === sourceStudents.filter(s => s.student_id !== undefined).length} className="w-4 h-4 rounded text-violet-600" /></th>
+                                    <th className="p-3 w-12"><input type="checkbox" onChange={handleSelectAll} checked={sourceStudents.filter(s => s.student_id !== undefined).length > 0 && selectedStudentIds.length === sourceStudents.filter(s => s.student_id !== undefined).length} className="w-4 h-4 rounded text-violet-600" /></th>
                                     <th className="p-3">Admission No</th>
                                     <th className="p-3">Student Name</th>
                                     <th className="p-3">Father Name</th>

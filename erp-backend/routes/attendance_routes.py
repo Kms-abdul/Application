@@ -5,6 +5,7 @@ from helpers import token_required, require_academic_year, student_to_dict, get_
 from datetime import datetime, date
 from sqlalchemy import or_
 from routes.config_routes import is_weekoff_or_holiday
+import traceback
 bp = Blueprint('attendance_routes', __name__)
 
 @bp.route("/api/attendance", methods=["GET"])
@@ -338,12 +339,14 @@ def generate_template(current_user):
         
         class_name = request.args.get("class")
         section = request.args.get("section")
-        month = int(request.args.get("month"))
-        year = int(request.args.get("year"))
+        month = request.args.get("month")
+        year = request.args.get("year")
         
-        if not class_name:
-             return jsonify({"error": "Class is required"}), 400
-             
+        if not class_name or not month or not year:
+             return jsonify({"error": "Class, month, and year are required"}), 400
+        
+        month = int(month)
+        year = int(year)             
         # Reuse logic to fetch students
         h_branch = request.headers.get("X-Branch") or "Main"
         h_year, err, code = require_academic_year()
@@ -544,7 +547,7 @@ def upload_attendance(current_user):
                     status=status,
                     branch=h_branch,
                     academic_year=h_year,
-                    location=current_user.location or "Hyderabad"
+                    location=current_user.location or get_default_location()
                  )
                  db.session.add(new_r)
                  added += 1

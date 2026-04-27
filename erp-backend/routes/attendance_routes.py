@@ -203,6 +203,14 @@ def save_attendance(current_user):
 
             try:
                 d_obj = datetime.strptime(d_str, '%Y-%m-%d').date()
+                
+                # Check for future month
+                today = date.today()
+                if (d_obj.year > today.year) or (d_obj.year == today.year and d_obj.month > today.month):
+                    skipped_count += 1
+                    skip_details.append(f"Future month blocked: {d_str}")
+                    continue
+
                 valid_items.append({
                     "student_id": s_id,
                     "date": d_obj,
@@ -421,6 +429,11 @@ def upload_attendance(current_user):
         year = int(year)
         month = int(month)
         
+        # Check for future month
+        today = date.today()
+        if (year > today.year) or (year == today.year and month > today.month):
+            return jsonify({"error": "Attendance cannot be uploaded for future months"}), 400
+
         df = pd.read_excel(file)
         
         # Validate Columns

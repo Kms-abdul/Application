@@ -58,7 +58,7 @@ def create_app():
         if not secret_key or len(secret_key) < 32:
             raise RuntimeError("SECRET_KEY must be configured with at least 32 characters in production.")
     elif not secret_key:
-        secret_key = "dev-only-secret-key-change-before-production"
+        secret_key = os.urandom(32).hex()
         logging.getLogger(__name__).warning("SECRET_KEY not set. Using a development fallback key.")
 
     app.config["SECRET_KEY"] = secret_key

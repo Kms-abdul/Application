@@ -1,0 +1,4 @@
+## 2024-04-27 - [Hardcoded Secret Key Fallback in Development]
+**Vulnerability:** The application used a predictable, hardcoded string ("dev-only-secret-key-change-before-production") as a fallback for `SECRET_KEY` when it was missing in non-production environments.
+**Learning:** Hardcoded secrets, even if intended only for development, pose a risk if an application is accidentally deployed or exposed without proper environment configuration. The lack of a secure random fallback creates an unnecessary attack vector for forging session tokens and signatures.
+**Prevention:** Always use a secure, randomly generated fallback (e.g., `os.urandom(32).hex()`) when a secret key is required but missing, ensuring that the application remains secure even in improperly configured non-production environments.

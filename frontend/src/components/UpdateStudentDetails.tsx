@@ -128,7 +128,7 @@ const UpdateStudentDetails: React.FC<UpdateStudentDetailsProps> = ({ onBack }) =
     const [currentPage, setCurrentPage] = useState(1);
     const studentsPerPage = 50;
 
-    const successTimeoutsRef = React.useRef<Record<number, NodeJS.Timeout>>({});
+    const successTimeoutsRef = React.useRef<Record<number, ReturnType<typeof setTimeout>>>({});
 
     // Cleanup timeouts on unmount
     useEffect(() => {
@@ -287,7 +287,7 @@ const UpdateStudentDetails: React.FC<UpdateStudentDetailsProps> = ({ onBack }) =
             });
             // Show success indicator briefly
             setSaveSuccess(prev => new Set(prev).add(studentId));
-            
+
             if (successTimeoutsRef.current[studentId]) {
                 clearTimeout(successTimeoutsRef.current[studentId]);
             }

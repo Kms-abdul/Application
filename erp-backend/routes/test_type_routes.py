@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app
-from extensions import db
+from extensions import db, to_local_time
 from models import TestType, User
 from helpers import token_required
 
@@ -26,8 +26,8 @@ def get_test_types():
             'display_order': t.display_order,
             'is_active': t.is_active,
             'academic_year': t.academic_year,
-            'created_at': t.created_at.isoformat() if t.created_at else None,
-            'updated_at': t.updated_at.isoformat() if t.updated_at else None,
+            'created_at': to_local_time(t.created_at).isoformat() if t.created_at else None,
+            'updated_at': to_local_time(t.updated_at).isoformat() if t.updated_at else None,
             'created_by': t.created_by,
             'updated_by': t.updated_by
         } for t in test_types]), 200

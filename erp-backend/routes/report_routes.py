@@ -14,8 +14,11 @@ def consolidate_receipts(payments):
     receipt_map = {}
     
     for p in payments:
-        if p.receipt_no not in receipt_map:
-            receipt_map[p.receipt_no] = {
+        # Group by both branch and receipt_no to prevent cross-branch receipt merging
+        key = f"{p.branch}_{p.receipt_no}"
+
+        if key not in receipt_map:
+            receipt_map[key] = {
                 "receipt_no": p.receipt_no,
                 "student_name": (p.student.first_name if p.student else "Unknown") + " " + (p.student.last_name if p.student and p.student.last_name else ""),
                 "admission_no": p.student.admission_no if p.student else "",
@@ -35,7 +38,8 @@ def consolidate_receipts(payments):
                 "fee_types": []
             }
         
-        item = receipt_map[p.receipt_no]
+        key = f"{p.branch}_{p.receipt_no}"
+        item = receipt_map[key]
         item["gross_amount"] += float(p.gross_amount or 0)
         item["concession"] += float(p.concession_amount or 0)
         item["net_payable"] += float(p.net_payable or 0)

@@ -159,7 +159,8 @@ const useClassSections = (selectedClass: string) => {
 // Logic Helpers
 const filterData = (data: any[], filters: any) => {
     if (!data) return [];
-    return data.filter(r => {
+
+    const filtered = data.filter(r => {
         if (filters.class && filters.class !== 'All' && r.class !== filters.class) return false;
         if (filters.section && filters.section !== 'All' && r.section !== filters.section) return false;
         if (filters.feeType && filters.feeType !== 'All' && !r.fee_type_str?.includes(filters.feeType)) return false;
@@ -167,6 +168,36 @@ const filterData = (data: any[], filters: any) => {
         if (filters.collector && filters.collector !== 'All' && r.collected_by !== filters.collector) return false;
         return true;
     });
+
+    if (filters.feeType && filters.feeType !== 'All') {
+        return filtered.map(r => {
+            if (!r.line_items || !Array.isArray(r.line_items)) return r;
+
+            const matchingItems = r.line_items.filter((item: any) => item.fee_type_str?.includes(filters.feeType));
+            if (matchingItems.length === 0) return r; // Fallback
+
+            const newAmountPaid = matchingItems.reduce((sum: number, item: any) => sum + (Number(item.amount_paid) || 0), 0);
+            const newGross = matchingItems.reduce((sum: number, item: any) => sum + (Number(item.gross_amount) || 0), 0);
+            const newConcession = matchingItems.reduce((sum: number, item: any) => sum + (Number(item.concession) || 0), 0);
+            const newDue = matchingItems.reduce((sum: number, item: any) => sum + (Number(item.due_amount) || 0), 0);
+            const newNet = matchingItems.reduce((sum: number, item: any) => sum + (Number(item.net_payable) || 0), 0);
+
+            const uniqueFeeTypes = Array.from(new Set(matchingItems.map((item: any) => item.fee_type_str))).join(", ");
+
+            return {
+                ...r,
+                amount_paid: newAmountPaid,
+                amount: newAmountPaid,
+                gross_amount: newGross,
+                concession: newConcession,
+                due_amount: newDue,
+                net_payable: newNet,
+                fee_type_str: uniqueFeeTypes
+            };
+        });
+    }
+
+    return filtered;
 };
 
 const calculateSummary = (receipts: any[]) => {

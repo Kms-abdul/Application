@@ -1,0 +1,4 @@
+## 2025-05-07 - Dynamic Query Parameterization
+**Vulnerability:** A second-order SQL injection vulnerability via an f-string was used to construct dynamic `OR` conditions for an `attendance_query` looping over `mapped_months` in `erp-backend/routes/report_card_routes.py`.
+**Learning:** Developers often fall back to dangerous string formatting when they need to dynamically append conditions within a loop, even when the rest of the query is parameterized properly.
+**Prevention:** Always maintain a parameters list (`att_params`) alongside the query string. When appending conditions dynamically, use parameter placeholders (e.g. `%s`) and `extend()` or `append()` the parameter values to the parameters list sequentially so they can be securely passed together to `cursor.execute()`.

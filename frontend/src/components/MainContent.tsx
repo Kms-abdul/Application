@@ -14,10 +14,9 @@ const WelcomeBar: React.FC<WelcomeBarProps> = ({ navigateTo }) => {
 
     const menuItems = [
         { name: 'Fee', icon: 'https://cdn-icons-png.flaticon.com/512/1001/1001096.png', page: 'fee' as Page },
-        { name: 'Admission', icon: 'https://cdn-icons-png.flaticon.com/512/3063/3063820.png', page: 'dashboard' as Page },
-        { name: 'Account', icon: 'https://cdn-icons-png.flaticon.com/512/272/272997.png', page: 'dashboard' as Page },
-        { name: 'Student', icon: 'https://cdn-icons-png.flaticon.com/512/921/921347.png', page: 'dashboard' as Page },
-        { name: 'Staff', icon: 'https://cdn-icons-png.flaticon.com/512/2940/2940626.png', page: 'dashboard' as Page },
+        { name: 'Admission', icon: 'https://cdn-icons-png.flaticon.com/512/3063/3063820.png', page: 'create-student' as Page },
+        { name: 'Student', icon: 'https://cdn-icons-png.flaticon.com/512/921/921347.png', page: 'student-administration' as Page },
+
     ];
 
     const savedUser = localStorage.getItem('user');

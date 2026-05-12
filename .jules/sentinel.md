@@ -1,0 +1,4 @@
+## 2025-02-25 - Fix Second-Order SQL Injection in Dynamic Query Construction
+**Vulnerability:** A dynamic SQL query was constructed using f-strings to iterate over data that originated from the database (`mapped_months`), potentially exposing the application to second-order SQL injection if that database data was ever tampered with or poorly sanitized upon entry.
+**Learning:** Even when using data retrieved from the database to build further queries, f-strings or `.format()` should never be used for SQL interpolation. The database should never be implicitly trusted as a source of clean input for query building.
+**Prevention:** Always use parameterized queries (e.g., `%s` for MySQL connector) and build an associated parameters list to pass into the `cursor.execute(query, tuple(params))` function for all dynamic query variables, regardless of origin.

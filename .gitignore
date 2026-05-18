@@ -23,7 +23,7 @@ __pycache__/
 # =========================
 # Allow required txt files
 # =========================
-!erp-backend/requirements.txt
+erp-backend/requirements.txt
 !erp-backend/runtime.txt
 
 # =========================

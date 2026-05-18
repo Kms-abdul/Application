@@ -1247,3 +1247,50 @@ def copy_concessions(current_user):
         db.session.rollback()
         print(f"[ERROR] Copy Concessions: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+@bp.route("/api/update-rebate-date", methods=["PUT"])
+@token_required
+def update_rebate_date(current_user):
+    data = request.json or {}
+    try:
+        installment_title = data.get("installment_title")
+        academic_year = data.get("academic_year")
+        branch = data.get("branch")
+        new_due_date_str = data.get("new_due_date")
+
+        if not all([installment_title, academic_year, branch, new_due_date_str]):
+            return jsonify({"error": "Missing required fields (installment_title, academic_year, branch, new_due_date)"}), 400
+
+        from datetime import datetime
+        new_due_date = datetime.strptime(new_due_date_str, "%Y-%m-%d").date()
+
+        # We need to update StudentFee.due_date for all students in the branch, matching academic_year and month
+        from models import StudentFee, Student, db
+
+        query = db.session.query(StudentFee).join(Student).filter(
+            StudentFee.month == installment_title,
+            StudentFee.academic_year == academic_year,
+            StudentFee.is_active == True
+        )
+
+        if branch != "All":
+            query = query.filter(Student.branch == branch)
+
+        student_fees = query.all()
+        updated_count = 0
+        for sf in student_fees:
+            sf.due_date = new_due_date
+            updated_count += 1
+
+        db.session.commit()
+        return jsonify({
+            "message": f"Successfully updated rebate date for {updated_count} student fee records.",
+            "updated_count": updated_count
+        }), 200
+
+    except Exception as e:
+        db.session.rollback()
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500

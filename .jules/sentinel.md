@@ -1,0 +1,4 @@
+## 2024-05-24 - SQL Injection Risk via f-string interpolation
+**Vulnerability:** A second-order SQL injection vulnerability existed in `erp-backend/routes/report_card_routes.py` where database query conditions were built using f-string interpolation with dictionary values.
+**Learning:** Even if data originates from a previous database query (in this case, `mapped_months` from `test_attendance_months`), it should still be treated as potentially unsafe for raw query interpolation to prevent second-order SQL injection. The data structure may be influenced by user input elsewhere or modified in the future.
+**Prevention:** Always use parameterized queries (e.g., `%s` placeholder and passing variables in a tuple/list to `cursor.execute()`) for all dynamic values in raw SQL, regardless of their immediate source.

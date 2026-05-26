@@ -484,15 +484,18 @@ def get_student_report(current_user):
         att_params = [student_id, academic_year]  
       
         conditions = []  
+        dynamic_params = []
         for m in mapped_months:  
-            conditions.append(f"(MONTH(date) = {m['month']} AND YEAR(date) = {m['year']})")  
+            conditions.append("(MONTH(date) = %s AND YEAR(date) = %s)")
+            dynamic_params.append(m['month'])
+            dynamic_params.append(m['year'])
       
         if conditions:  
             attendance_query += " AND (" + " OR ".join(conditions) + ")"  
   
         attendance_query += " GROUP BY YEAR(date), MONTH(date), MONTHNAME(date) ORDER BY YEAR(date), MONTH(date)"  
       
-        cursor.execute(attendance_query, tuple(att_params))  
+        cursor.execute(attendance_query, tuple(att_params + dynamic_params))
         attendance_rows = cursor.fetchall()  
       
         monthly_attendance = []  

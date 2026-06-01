@@ -1,6 +1,7 @@
 # pyrefly: ignore [missing-import]
 from flask import Blueprint, request, jsonify, g
 from models import db, HifzProgram, StudentHifzProgress, Student
+from helpers import token_required
 import logging
 
 hifz_bp = Blueprint('hifz_bp', __name__)
@@ -9,7 +10,8 @@ logger = logging.getLogger(__name__)
 # --- Master Settings ---
 
 @hifz_bp.route('/programs', methods=['GET'])
-def get_programs():
+@token_required
+def get_programs(current_user):
     try:
         programs = HifzProgram.query.filter_by(is_active=True).all()
         return jsonify([
@@ -25,7 +27,8 @@ def get_programs():
         return jsonify({"message": "Error fetching programs"}), 500
 
 @hifz_bp.route('/programs', methods=['POST'])
-def create_program():
+@token_required
+def create_program(current_user):
     try:
         data = request.json
         program = HifzProgram(
@@ -42,7 +45,8 @@ def create_program():
         return jsonify({"message": str(e)}), 500
 
 @hifz_bp.route('/programs/<int:prog_id>', methods=['PUT'])
-def update_program(prog_id):
+@token_required
+def update_program(current_user, prog_id):
     try:
         data = request.json
         program = HifzProgram.query.get_or_404(prog_id)
@@ -56,7 +60,8 @@ def update_program(prog_id):
         return jsonify({"message": str(e)}), 500
 
 @hifz_bp.route('/programs/<int:prog_id>', methods=['DELETE'])
-def delete_program(prog_id):
+@token_required
+def delete_program(current_user, prog_id):
     try:
         program = HifzProgram.query.get_or_404(prog_id)
         program.is_active = False
@@ -69,7 +74,8 @@ def delete_program(prog_id):
 # --- Bulk Entry API ---
 
 @hifz_bp.route('/students', methods=['GET'])
-def get_hifz_students():
+@token_required
+def get_hifz_students(current_user):
     try:
         academic_year = request.headers.get("X-Academic-Year", "2024-2025")
         branch = request.args.get('branch')
@@ -139,7 +145,8 @@ def get_hifz_students():
         return jsonify({"message": str(e)}), 500
 
 @hifz_bp.route('/bulk-progress', methods=['POST'])
-def save_bulk_progress():
+@token_required
+def save_bulk_progress(current_user):
     try:
         data = request.json
         academic_year = request.headers.get("X-Academic-Year", "2024-2025")

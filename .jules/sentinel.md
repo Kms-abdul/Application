@@ -1,0 +1,4 @@
+## 2025-02-27 - [Broken Access Control in User Creation]
+**Vulnerability:** The `/api/users/add` endpoint was protected by `@token_required` but lacked role-based authorization checking `current_user.role`. This allowed any authenticated user (e.g. students or low-level staff) to create new users, including Admin users, leading to privilege escalation.
+**Learning:** The `@token_required` decorator in this Flask application only validates authentication (that a token is valid and associated with a user), but does not imply any authorization. This is a common pattern in Flask apps where authentication and authorization are loosely coupled.
+**Prevention:** Always add explicit authorization checks (e.g., `if current_user.role != "Admin": return jsonify({"error": "Admin privileges required"}), 403`) in administrative endpoints. Do not rely solely on the authentication decorator.

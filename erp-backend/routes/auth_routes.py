@@ -124,6 +124,10 @@ def debug_user(current_user, username):
 @bp.route("/api/users/add", methods=["POST"])
 @token_required
 def create_user(current_user):
+    # Sentinel: 🛡️ Ensure only Admin users can create new accounts to prevent privilege escalation
+    if current_user.role != "Admin":
+        return jsonify({"error": "Admin privileges required"}), 403
+
     try:
         data = request.json
         if not data:

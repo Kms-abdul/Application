@@ -1,0 +1,4 @@
+## 2024-06-05 - SQL Injection Vulnerability in Dynamic Query Builder
+**Vulnerability:** An f-string was used to construct conditions in `attendance_query` inside `get_report_card` (`erp-backend/routes/report_card_routes.py`), allowing values from the database (`mapped_months`) to be directly interpolated into the SQL string without parameterized query escaping. This risks Second-Order SQL Injection if database values are tampered with.
+**Learning:** Even when values are retrieved from a trusted database source (like `mapped_months` in this case), using f-strings for dynamic SQL generation breaks the parameterized query contract and introduces security vulnerabilities if the database data is later modified maliciously.
+**Prevention:** Always use parameterized query placeholders (e.g., `%s`) for *all* variable insertions, including dynamic loop-based conditions, and extend the params list instead of directly concatenating strings.

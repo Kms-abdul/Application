@@ -1,0 +1,4 @@
+## 2026-06-06 - Missing Authorization on User Creation Endpoint
+**Vulnerability:** The `/api/users/add` endpoint in `erp-backend/routes/auth_routes.py` is decorated with `@token_required` but lacks a role-based authorization check (e.g., `if current_user.role != 'Admin':`).
+**Learning:** The `@token_required` decorator only ensures that the user is authenticated. It does not verify the user's role. This allows any authenticated user, regardless of their role, to create new users, including users with the 'Admin' role, leading to a severe privilege escalation vulnerability.
+**Prevention:** Administrative endpoints (e.g., creating users, assigning roles) must explicitly enforce role-based authorization checks in addition to authentication to prevent broken access control and privilege escalation.

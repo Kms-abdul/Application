@@ -125,6 +125,9 @@ def debug_user(current_user, username):
 @token_required
 def create_user(current_user):
     try:
+        if current_user.role != 'Admin':
+            return jsonify({"error": "Unauthorized"}), 403
+
         data = request.json
         if not data:
             return jsonify({"error": "No input data provided"}), 400

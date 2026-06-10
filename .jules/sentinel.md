@@ -1,0 +1,4 @@
+## 2025-06-10 - Authorization Bypass in Admin Endpoints
+**Vulnerability:** The `@token_required` decorator verifies authentication but not authorization. Several administrative endpoints like `/api/users/add` allow any authenticated user to create new users and assign them arbitrary roles (including 'Admin'), leading to privilege escalation.
+**Learning:** In Flask, global blueprints don't enforce authentication/authorization by default. Even when `@token_required` is used, it only ensures a valid token is present. Role-based checks must be explicitly performed inside the route handler or via a dedicated authorization decorator.
+**Prevention:** Always implement explicit role checks (e.g., `if current_user.role != 'Admin':`) in sensitive endpoints. Consider creating a `@role_required(*roles)` decorator to centralize authorization logic alongside authentication.

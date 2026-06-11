@@ -31,7 +31,14 @@ export type Page =
   | "document-administration"
   | "student-document-management"
   | "document-management"
-  | "staff-support";
+  | "staff-support"
+  | "petty-cash"
+  | "petty-cash-report"
+  | "deleted-receipts"
+  | "fee-concession-report"
+  | "adjust-fee-report"
+  | "fund-allocation"
+  | "month-wise-ledger";
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {

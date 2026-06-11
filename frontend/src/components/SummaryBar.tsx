@@ -99,4 +99,4 @@ const SummaryBar: React.FC = () => {
     );
 };
 
-export default SummaryBar;
+export default SummaryBar;

@@ -54,13 +54,13 @@ const UpdateRebateDate: React.FC = () => {
             const installmentsData = Array.isArray(response.data)
                 ? response.data
                 : (response.data.installments || []);
-
+            
             const filtered = academicYear
                 ? installmentsData.filter((inst: Installment) =>
                     !inst.academic_year || inst.academic_year === academicYear
                 )
                 : installmentsData;
-
+            
             setInstallments(filtered);
             setError('');
         } catch (err: any) {
@@ -73,7 +73,7 @@ const UpdateRebateDate: React.FC = () => {
         try {
             const response = await api.get(`/current-rebate-dates?branch=${branch}`);
             const rebatesData = response.data.rebate_dates || [];
-
+            
             // Convert to a map for easy lookup by installment title
             const rebatesMap: Record<string, CurrentRebate> = {};
             rebatesData.forEach((r: CurrentRebate) => {
@@ -106,14 +106,6 @@ const UpdateRebateDate: React.FC = () => {
             return;
         }
 
-        // Show confirmation with student count
-        const currentRebate = currentRebates[inst.title];
-        const studentCount = currentRebate?.student_count || 0;
-        const confirmed = window.confirm(
-            `This will update the due date for ${studentCount} student(s) in ${branch} for ${inst.title}.\n\nContinue?`
-        );
-        if (!confirmed) return;
-
         try {
             setSavingId(inst.id);
             setSuccessMessage('');
@@ -127,10 +119,10 @@ const UpdateRebateDate: React.FC = () => {
             };
 
             const response = await api.put('/update-rebate-date', payload);
-
+            
             setSuccessMessage(`Success: ${response.data.message}`);
             setTimeout(() => setSuccessMessage(''), 5000);
-
+            
             // Clear the local state for this row
             setNewDates(prev => {
                 const updated = { ...prev };
@@ -140,7 +132,7 @@ const UpdateRebateDate: React.FC = () => {
 
             // Refresh the current rebate dates so the new value shows up below
             await fetchCurrentRebates();
-
+            
         } catch (err: any) {
             console.error("Error updating rebate date", err);
             setError(err.response?.data?.error || 'Failed to update rebate date');
@@ -149,6 +141,7 @@ const UpdateRebateDate: React.FC = () => {
             setSavingId(null);
         }
     };
+
     if (loading) {
         return <div className="p-6">Loading installments...</div>;
     }
@@ -201,7 +194,7 @@ const UpdateRebateDate: React.FC = () => {
                             ) : (
                                 installments.map(inst => {
                                     const currentRebate = currentRebates[inst.title];
-                                    const originalDate = inst.last_pay_date
+                                    const originalDate = inst.last_pay_date 
                                         ? new Date(inst.last_pay_date).toISOString().split('T')[0]
                                         : null;
                                     const currentDateISO = currentRebate?.current_due_date
@@ -237,7 +230,7 @@ const UpdateRebateDate: React.FC = () => {
                                                         {isModified ? (
                                                             <>
                                                                 <span className="inline-flex items-center">
-                                                                    <span className="mr-1">🔄</span>
+                                                                    <span className="mr-1"></span>
                                                                     Currently set to: <strong className="ml-1">{formatDate(currentRebate.current_due_date)}</strong>
                                                                 </span>
                                                                 <div className="text-[10px] text-gray-400 mt-0.5">
@@ -256,12 +249,13 @@ const UpdateRebateDate: React.FC = () => {
                                                 <button
                                                     onClick={() => handleSave(inst)}
                                                     disabled={!newDates[inst.id] || savingId === inst.id}
-                                                    className={`px-4 py-1.5 rounded text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-violet-500 transition-colors ${!newDates[inst.id]
-                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                        : savingId === inst.id
-                                                            ? 'bg-violet-400 text-white cursor-wait'
-                                                            : 'bg-violet-600 text-white hover:bg-violet-700'
-                                                        }`}
+                                                    className={`px-4 py-1.5 rounded text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-violet-500 transition-colors ${
+                                                        !newDates[inst.id]
+                                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                            : savingId === inst.id
+                                                                ? 'bg-violet-400 text-white cursor-wait'
+                                                                : 'bg-violet-600 text-white hover:bg-violet-700'
+                                                    }`}
                                                 >
                                                     {savingId === inst.id ? 'Saving...' : 'Update'}
                                                 </button>

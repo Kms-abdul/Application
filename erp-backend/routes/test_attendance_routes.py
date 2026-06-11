@@ -2,7 +2,6 @@ from flask import Blueprint, request, jsonify
 from extensions import db
 from models import TestAttendanceMonth
 import datetime
-from helpers import token_required
 
 test_attendance_bp = Blueprint('test_attendance_bp', __name__)
 
@@ -29,8 +28,7 @@ def get_test_attendance():
     } for m in mappings])
 
 @test_attendance_bp.route('/api/test-attendance', methods=['POST'])
-@token_required
-def save_test_attendance(current_user):
+def save_test_attendance():
     data = request.get_json()
     test_id = data.get('test_id')
     academic_year = data.get('academic_year')

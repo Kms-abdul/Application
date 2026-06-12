@@ -485,7 +485,9 @@ def get_student_report(current_user):
       
         conditions = []  
         for m in mapped_months:  
-            conditions.append(f"(MONTH(date) = {m['month']} AND YEAR(date) = {m['year']})")  
+            # Security: Use parameterized inputs instead of f-strings to prevent SQL injection risks
+            conditions.append("(MONTH(date) = %s AND YEAR(date) = %s)")
+            att_params.extend([m['month'], m['year']])
       
         if conditions:  
             attendance_query += " AND (" + " OR ".join(conditions) + ")"  

@@ -1,0 +1,4 @@
+## 2025-05-01 - [Second-order SQL Injection via F-strings]
+**Vulnerability:** A potential second-order SQL injection vulnerability was found in `erp-backend/routes/report_card_routes.py` where a dynamic query was built using Python f-strings `f"(MONTH(date) = {m['month']} AND YEAR(date) = {m['year']})"`. Although these values were sourced from the database, string formatting creates a second-order SQL injection risk if the DB values are compromised.
+**Learning:** Even data retrieved from the database should not be directly interpolated into SQL strings. It's crucial to always use parameterized query variables `%s` when dynamically building queries to prevent unexpected behavior or injection.
+**Prevention:** Use standard parameterization methods for all variables in raw SQL queries (`%s` with `cursor.execute()`), regardless of whether the input originates from the user or the database.

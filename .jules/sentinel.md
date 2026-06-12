@@ -1,0 +1,4 @@
+## 2026-05-10 - [SQL Injection via f-strings with database inputs]
+**Vulnerability:** Second-order SQL injection risk in `report_card_routes.py` where month and year values sourced from the database were injected into an SQL query using f-strings (e.g., `f"(MONTH(date) = {m['month']} AND YEAR(date) = {m['year']})"`).
+**Learning:** Even when data originates from the database (e.g., `mapped_months`), it must not be trusted for direct string interpolation in SQL queries. This pattern risks second-order SQL injection if the database values were somehow manipulated or contained unexpected characters.
+**Prevention:** Always use `%s` parameterization for all dynamic values in raw SQL queries (`cursor.execute`), regardless of their origin. Never use f-strings or `.format()` for SQL query interpolation.

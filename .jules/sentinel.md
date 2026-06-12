@@ -1,0 +1,4 @@
+## 2024-05-20 - [Hardcoded Secret in Development Fallback]
+**Vulnerability:** A static, hardcoded secret key (`dev-only-secret-key-change-before-production`) was used as a fallback when `SECRET_KEY` was missing from the environment.
+**Learning:** Hardcoded secrets in code, even if intended only for development environments, risk being accidentally deployed, leaked via version control, or persisting into production environments if configuration errors occur. This defeats cryptographic protections such as session cookies and JWT signing.
+**Prevention:** Always generate a random secret cryptographically (e.g., `os.urandom(32).hex()`) on application startup when a development fallback is required. This ensures that session secrets rotate every time the server restarts and cannot be predicted or stored in the repository.

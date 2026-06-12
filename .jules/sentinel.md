@@ -1,0 +1,4 @@
+## 2024-05-09 - Second-Order SQL Injection in Dynamic Queries via f-strings
+**Vulnerability:** Values sourced from the database (`mapped_months` month and year fields) were string-interpolated into a new SQL query using f-strings (`f"(MONTH(date) = {m['month']} AND YEAR(date) = {m['year']})"`), risking second-order SQL injection if the database contained malicious values.
+**Learning:** Developers might trust data coming from their own database (e.g., a mapped table) and feel safe using f-strings. This breaks defense-in-depth, as a vulnerability elsewhere could inject malicious data into the mapped table, which is then executed in this query. All variable insertion into raw SQL must be parameterized.
+**Prevention:** Always use the underlying database driver's parameterization strategy (e.g. `%s` placeholders with `params.extend()` for dynamic query lists) regardless of the data's origin. Never use f-strings to format raw SQL strings.

@@ -1,0 +1,4 @@
+## 2024-05-18 - Missing Authentication in Hifz Blueprint
+**Vulnerability:** The entire `hifz_bp` Blueprint in `erp-backend/routes/hifz_routes.py` lacked the `@token_required` decorator on all of its routes, exposing sensitive program configurations and student progress data to unauthenticated requests.
+**Learning:** Flask Blueprints do not enforce global authentication by default in this project's architecture. When creating new feature blueprints, security decorators must be explicitly imported and applied to every route, along with role-based authorization checks (e.g., `current_user.role == 'Admin'`) for administrative endpoints to prevent broken access control.
+**Prevention:** Always verify that newly created endpoints or blueprints explicitly include the `@token_required` decorator and the `current_user` parameter in the route function signature.

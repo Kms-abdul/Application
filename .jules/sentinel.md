@@ -1,0 +1,4 @@
+## 2025-02-18 - [Missing Authentication on Hifz Endpoints]
+**Vulnerability:** Found multiple endpoints in `erp-backend/routes/hifz_routes.py` (e.g., `/programs`, `/bulk-progress`, `/students`) completely lacking authentication, allowing unauthorized users to read, create, update, and delete Hifz programs and student progress data without an API token.
+**Learning:** The application does not enforce global authentication on Flask blueprints. Missing explicit decorators like `@token_required` creates severe unauthorized access vulnerabilities. This is a critical gap in the application's architecture when adding new feature blueprints.
+**Prevention:** Always explicitly apply authentication decorators (like `@token_required`) and define the `current_user` parameter for all new routes or blueprints handling sensitive data. Ensure tests cover authenticated AND unauthenticated access attempts to catch missing decorators.

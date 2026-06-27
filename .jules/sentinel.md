@@ -1,0 +1,4 @@
+## 2024-05-18 - Missing Authorization Check on User Creation Endpoint
+**Vulnerability:** The `/api/users/add` endpoint in `auth_routes.py` was protected by the `@token_required` decorator but lacked role-based authorization checks, allowing any authenticated user to create new accounts (including Admin accounts) leading to potential privilege escalation.
+**Learning:** The `@token_required` decorator only provides authentication, not authorization. Flask blueprints without global authorization checks require explicit role validation on sensitive administrative endpoints.
+**Prevention:** Always verify the `current_user.role` (e.g., `if current_user.role != "Admin":`) at the beginning of administrative route handlers to enforce proper access control and prevent broken access control vulnerabilities.

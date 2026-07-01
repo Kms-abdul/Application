@@ -1,0 +1,4 @@
+## 2025-02-28 - Missing Role-Based Authorization in Admin Endpoints
+**Vulnerability:** The `/api/users/add` endpoint was decorated with `@token_required` (verifying authentication) but lacked explicit authorization logic (`current_user.role == 'Admin'`), allowing any authenticated user to create new users, including admins (Privilege Escalation).
+**Learning:** The `@token_required` decorator in this Flask application does not enforce global role-based access control. Route definitions for sensitive administrative actions must explicitly verify `current_user.role` after authentication.
+**Prevention:** Always implement explicit role checks (e.g., `if current_user.role != 'Admin': return 403`) for all endpoints that modify user accounts, roles, or perform sensitive administrative tasks, relying on Defense in Depth rather than assuming authentication implies authorization.

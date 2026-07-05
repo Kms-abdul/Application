@@ -124,6 +124,8 @@ def debug_user(current_user, username):
 @bp.route("/api/users/add", methods=["POST"])
 @token_required
 def create_user(current_user):
+    if current_user.role != "Admin":
+        return jsonify({"error": "Unauthorized"}), 403
     try:
         data = request.json
         if not data:

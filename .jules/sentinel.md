@@ -1,0 +1,4 @@
+## 2024-07-06 - [Missing Authorization on User Creation Endpoint]
+**Vulnerability:** The `/api/users/add` endpoint used the `@token_required` decorator for authentication but lacked role-based authorization checks, allowing any authenticated user to create new users with arbitrary roles (including 'Admin').
+**Learning:** The `@token_required` decorator in this backend architecture only verifies authentication (valid token). It does not enforce administrative privileges. Application logic must manually implement role-based access control inside the route handler.
+**Prevention:** Always verify that administrative or sensitive endpoints explicitly include a check against `current_user.role` immediately after authentication to prevent Broken Access Control.

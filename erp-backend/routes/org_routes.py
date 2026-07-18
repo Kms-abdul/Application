@@ -30,7 +30,8 @@ def get_all_branches(current_user):
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/org/locations", methods=["GET"])
-def get_all_locations():
+@token_required
+def get_all_locations(current_user):
     """Fetch all available locations from OrgMaster"""
     try:
         locations = OrgMaster.query.filter_by(master_type='LOCATION', is_active=True).all()
@@ -44,7 +45,8 @@ def get_all_locations():
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/org/academic-years", methods=["GET"])
-def get_all_academic_years():
+@token_required
+def get_all_academic_years(current_user):
     """Fetch all available academic years from OrgMaster"""
     try:
         years = OrgMaster.query.filter_by(master_type='ACADEMIC_YEAR', is_active=True).all()
@@ -60,7 +62,8 @@ def get_all_academic_years():
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/setup/seed-branches", methods=["POST"])
-def seed_branches():
+@token_required
+def seed_branches(current_user):
     # ... (table creation and seeing logic) ...
     # Simplified for brevity as per instructions, but full logic should be here if needed for setup
     # Since this is a setup route, maybe keep it simple or remove if not needed for daily ops?
@@ -122,7 +125,8 @@ def seed_branches():
     }), 201
 
 @bp.route("/api/classes", methods=["GET"])
-def get_classes():
+@token_required
+def get_classes(current_user):
     from sqlalchemy import and_
     
     # Filter by Branch (Query param has precedence over Header)

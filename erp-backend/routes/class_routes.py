@@ -340,7 +340,8 @@ def copy_branch_structure(current_user):
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/classes", methods=["GET"])
-def get_classes():
+@token_required
+def get_classes(current_user):
     """
     Get all classes (ClassMaster).
     """

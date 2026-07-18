@@ -1462,7 +1462,8 @@ def get_student_summary(current_user):
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/students/template", methods=["GET"])
-def download_student_template():
+@token_required
+def download_student_template(current_user):
     """Download student import template"""
     template_data = {
         "admission_no": ["ADM001"],

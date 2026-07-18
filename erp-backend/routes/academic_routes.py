@@ -68,7 +68,8 @@ def create_subject(current_user):
 
 
 @bp.route("/api/academic/subjects", methods=["GET"])
-def list_subjects():
+@token_required
+def list_subjects(current_user):
     try:
         academic_year = request.args.get("academic_year")
         if academic_year:
@@ -239,7 +240,8 @@ def assign_subjects(current_user):
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/academic/assigned-subjects", methods=["GET"])
-def get_assigned_subjects():
+@token_required
+def get_assigned_subjects(current_user):
     try:
         # Filters (Inputs might be IDs or Names)
         class_id = request.args.get("class_id")
@@ -524,7 +526,8 @@ def manage_subject_assignment(current_user):
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/sections", methods=["GET"])
-def get_sections():
+@token_required
+def get_sections(current_user):
     """
     Get sections for a specific class.
     Query Param: class (required)
@@ -586,7 +589,8 @@ def get_sections():
 # Student Subject Assignment (Overrides)
 # ---------------------------------------------------------
 @bp.route("/api/academics/assignment-data", methods=["GET"])
-def get_assignment_data():
+@token_required
+def get_assignment_data(current_user):
     from sqlalchemy import or_, and_
 
     try:

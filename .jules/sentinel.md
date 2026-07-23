@@ -1,0 +1,4 @@
+## 2024-07-23 - [Missing Role Check on User Creation]
+**Vulnerability:** The `/api/users/add` endpoint (`create_user` in `erp-backend/routes/auth_routes.py`) only verified if the user was authenticated (`@token_required`), but did not verify if they were an Admin. This allowed any authenticated user (e.g., students or regular staff) to create new users, including giving them the Admin role, leading to an authorization bypass and privilege escalation risk.
+**Learning:** In Flask backends that use `@token_required` for generic authentication, administrative endpoints need explicit, manual role-based access control checks inside the route function.
+**Prevention:** Always add an explicit role check (e.g., `if current_user.role != "Admin": return jsonify({"error": "Unauthorized"}), 403`) as the first line of any endpoint that performs administrative actions, such as user creation, deletion, or system configuration.

@@ -1,0 +1,4 @@
+## 2024-05-24 - [Unauthenticated Setup Route Vulnerability]
+**Vulnerability:** The `/api/setup/seed-branches` route in `erp-backend/routes/org_routes.py` was missing both authentication and authorization checks. This could allow any unauthenticated user to trigger database seeding operations, potentially modifying the initial application state.
+**Learning:** Setup/seed routes in `erp-backend` can sometimes be overlooked for proper protection, especially if they are intended for one-off use during deployment. The application does not enforce global authentication on Flask blueprints.
+**Prevention:** All initial application setup or seed routes (e.g., `/api/setup/...`) must be protected with both `@token_required` and an explicit Admin role check (`if current_user.role != 'Admin':`) to prevent unauthorized resetting or tampering of the database state in production.

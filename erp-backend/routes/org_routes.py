@@ -60,7 +60,10 @@ def get_all_academic_years():
         return jsonify({"error": str(e)}), 500
 
 @bp.route("/api/setup/seed-branches", methods=["POST"])
-def seed_branches():
+@token_required
+def seed_branches(current_user):
+    if current_user.role != "Admin":
+        return jsonify({"error": "Unauthorized"}), 403
     # ... (table creation and seeing logic) ...
     # Simplified for brevity as per instructions, but full logic should be here if needed for setup
     # Since this is a setup route, maybe keep it simple or remove if not needed for daily ops?
